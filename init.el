@@ -1,4 +1,12 @@
-;; Thanks but no thanks
+;; Basic UI Configuration --------------------------------------------------------------
+
+;; You will most likely need to adjust this font size for your system!
+(defvar h4rdc0m/default-font-size 200)
+(defvar h4rdc0m/fixed-font-size 260)
+(defvar h4rdc0m/variable-font-size 290)
+(defvar h4rdc0m/fixed-font "FiraMono Nerd Font")
+(defvar h4rdc0m/variable-font "Cantarell")
+
 (setq inhibit-startup-message t)
 
 (scroll-bar-mode -1) ; Disable visible scrollbar
@@ -12,7 +20,9 @@
 ; (setq visible-bell t) ; Disable for MacOS
 
 ;; Font set up
-(set-face-attribute 'default nil :font "FiraMono Nerd Font" :height 200)
+(set-face-attribute 'default nil :font h4rdc0m/fixed-font :height h4rdc0m/default-font-size)
+(set-face-attribute 'fixed-pitch nil :font h4rdc0m/fixed-font :height h4rdc0m/fixed-font-size)
+(set-face-attribute 'variable-pitch nil :font "Cantarell" :height h4rdc0m/variable-font-size :weight 'regular)
 
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -21,9 +31,8 @@
 (require 'package)
 
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-			 ;("melpa-stable" . "https://stable.melpa.org/packages/")
-			 ("org" . "https://orgmode.org/elpa/")
-			 ("elpa" . "https://elpa.gnu.org/packages/")))
+                         ("org" . "https://orgmode.org/elpa/")
+                         ("elpa" . "https://elpa.gnu.org/packages/")))
 
 (package-initialize)
 (unless package-archive-contents (package-refresh-contents))
@@ -40,9 +49,9 @@
 
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
-		term-mode-hook
-		shell-mode-hook
-		eshell-mode-hook))
+                term-mode-hook
+                shell-mode-hook
+                eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (use-package command-log-mode)
@@ -51,27 +60,27 @@
   :diminish
   :demand
   :bind (("C-s" . swiper)
-	:map ivy-minibuffer-map
-	("TAB" . ivy-alt-done)
-	("C-l" . ivy-alt-done)
-	("C-j" . ivy-next-line)
-	("C-k" . ivy-previous-line)
-	:map ivy-switch-buffer-map
-	("C-k" . ivy-previous-line)
-	("C-l" . ivy-done)
-	("C-d" . ivy-switch-buffer-kill)
-	:map ivy-reverse-i-search-map
-	("C-k" . ivy-previous-line)
-	("C-d" . ivy-reverse-i-search-kill))
+        :map ivy-minibuffer-map
+        ("TAB" . ivy-alt-done)
+        ("C-l" . ivy-alt-done)
+        ("C-j" . ivy-next-line)
+        ("C-k" . ivy-previous-line)
+        :map ivy-switch-buffer-map
+        ("C-k" . ivy-previous-line)
+        ("C-l" . ivy-done)
+        ("C-d" . ivy-switch-buffer-kill)
+        :map ivy-reverse-i-search-map
+        ("C-k" . ivy-previous-line)
+        ("C-d" . ivy-reverse-i-search-kill))
   :config
   (ivy-mode 1))
 
 (use-package counsel
   :bind (("M-x" . counsel-M-x)
-	 ("C-x b" . counsel-ibuffer)
-	 ("C-x C-f" . counsel-find-file)
-	 :map minibuffer-local-map
-	 ("C-f" . 'counsel-minibuffer-history))
+         ("C-x b" . counsel-ibuffer)
+         ("C-x C-f" . counsel-find-file)
+         :map minibuffer-local-map
+         ("C-f" . 'counsel-minibuffer-history))
   :config
   (setq ivy-initial-inputs-alist nil)) ;; Don't start searches with ^
 
@@ -155,7 +164,6 @@
   (evil-mode 1)
   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-
   ;; Use visual line motions even outside of visual line mode buffers
   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
@@ -164,7 +172,7 @@
   (evil-set-initial-state 'dashboard-mode 'normal))
 
 (use-package evil-collection
-  :after evil magit
+  :after evil magit forge
   :config
   (evil-collection-init))
 
@@ -197,4 +205,52 @@
 (use-package magit
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+(use-package forge
+  :config
+  (setq auth-sources '("~/.authinfo")))
+
+(defun h4rdc0m/org-mode-setup ()
+  (org-indent-mode)
+  (variable-pitch-mode 1)
+  (visual-line-mode 1))
+
+;; Set faces for heading levels
+(defun h4rdc0m/org-font-setup ();; Replace list hyphen with dot
+  (font-lock-add-keywords 'org-mode
+                        '(("^ *\\([-]\\) "
+                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+
+  (dolist (face '((org-level-1 . 1.2)
+		  (org-level-2 . 1.1)
+		  (org-level-3 . 1.05)
+		  (org-level-4 . 1.0)
+		  (org-level-5 . 1.1)
+		  (org-level-6 . 1.1)
+		  (org-level-7 . 1.1)
+		  (org-level-8 . 1.1)))
+    (set-face-attribute (car face) nil :font h4rdc0m/variable-font :weight 'regular :height (cdr face)))
+  
+  ;; Ensure that anything that should be fixed-pitch in Org files appears that way
+  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-table nil   :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+
+(use-package org
+  :hook (org-mode . h4rdc0m/org-mode-setup)
+  :config
+  (setq org-ellipsis " ▾")
+  (h4rdc0m/org-font-setup))
+
+(use-package org-bullets
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
 
