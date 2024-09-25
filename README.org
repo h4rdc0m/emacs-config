@@ -1,0 +1,5 @@
+* H4rdc0m's Emacs from Scratch setup
+** Requirements
+*** Fonts:
+      - FiraMono Nerd Font
+      - Cantarel

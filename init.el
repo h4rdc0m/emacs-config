@@ -245,6 +245,10 @@
   :hook (org-mode . h4rdc0m/org-mode-setup)
   :config
   (setq org-ellipsis " ▾")
+
+  (setq org-agenda-files
+	'("~/Projects/Code/runemacs/OrgFiles/Tasks.org"))
+  
   (h4rdc0m/org-font-setup))
 
 (use-package org-bullets
@@ -253,4 +257,10 @@
   :custom
   (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
 
+(defun h4rdc0m/org-mode-visual-fill ()
+  (setq visual-fill-column-width 100
+	visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
 
+(use-package visual-fill-column
+  :hook (org-mode . h4rdc0m/org-mode-visual-fill))
