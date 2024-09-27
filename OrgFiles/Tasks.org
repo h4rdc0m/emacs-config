@@ -1,4 +1,5 @@
 * Active
-** TODO Merge PR
-
+** DONE Merge PR
+CLOSED: [2024-09-25 Wed 11:03] DEADLINE: <2024-09-27 Fri>
+** TODO Write docs                                        :work:email:@work:
 * Backlog
