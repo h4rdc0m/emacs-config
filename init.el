@@ -347,8 +347,33 @@
   
 
   (setq org-capture-templates
-	'(("t" "Tasks / Projects"
-	   ("tt" "Task" entry 
+	'(("t" "Tasks / Projects")
+	  ("tt" "Task" entry (file+olp "~/Projects/Code/emacs-config/OrgFiles/Tasks.org" "Inbox")
+	   "* TODO %?\n %U\n %i :empty-lines 1")
+
+	  ("j" "Journal Entries")
+	  ("jj" "Journal" entry
+	   (file+olp+datetree "~/Projects/Code/emacs-config/OrgFiles/Journal.org")
+	   "\n %<%I:%M %p> - Journal :journal:\n\n%?\n\n"
+	   ;; ,(dw/read-file-as-string "~/Notes/Templates/Daily.org")
+           :clock-in :clock-resume
+           :empty-lines 1)
+	  ("jm" "Meeting" entry
+           (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
+           "* %<%I:%M %p> - %a :meetings:\n\n%?\n\n"
+           :clock-in :clock-resume
+           :empty-lines 1)
+          ("w" "Workflows")
+          ("we" "Checking Email" entry (file+olp+datetree "~/Projects/Code/emacs-from-scratch/OrgFiles/Journal.org")
+           "* Checking Email :email:\n\n%?" :clock-in :clock-resume :empty-lines 1)
+
+          ("m" "Metrics Capture")
+          ("mw" "Weight" table-line (file+headline "~/Projects/Code/emacs-from-scratch/OrgFiles/Metrics.org" "Weight")
+           "| %U | %^{Weight} | %^{Notes} |" :kill-buffer t)))
+
+  (define-key global-map (kbd "C-c j")
+    (lambda () (interactive) (org-capture nil "jj")))
+	   
   (h4rdc0m/org-font-setup))
 
 (use-package org-bullets
