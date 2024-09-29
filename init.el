@@ -21,9 +21,9 @@
 ;; Basic UI Configuration --------------------------------------------------------------
 
 ;; You will most likely need to adjust this font size for your system!
-(defvar h4rdc0m/default-font-size 200)
-(defvar h4rdc0m/fixed-font-size 260)
-(defvar h4rdc0m/variable-font-size 290)
+(defvar h4rdc0m/default-font-size 120)
+(defvar h4rdc0m/fixed-font-size 120)
+(defvar h4rdc0m/variable-font-size 130)
 (defvar h4rdc0m/fixed-font "FiraCode Nerd Font")
 (defvar h4rdc0m/variable-font "Cantarell")
 
@@ -132,8 +132,7 @@
 ;; Configure Doom modeline
 (use-package doom-modeline
   :demand t
-  :init (doom-modeline-mode 1)
-  :custom ((doom-modeline-height 60)))
+  :init (doom-modeline-mode 1))
 
 ;; Configure rainbow delimiters
 (use-package rainbow-delimiters
@@ -376,12 +375,16 @@
 	   
   (h4rdc0m/org-font-setup))
 
-(use-package org-bullets
+(use-package org-superstar
   :after org
-  :hook (org-mode . org-bullets-mode)
+  :hook (org-mode . org-superstar-mode)
   :custom
-  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
-
+  ;; Set your preferred bullet styles
+  (org-superstar-headline-bullets-list '("◉" "○" "●" "○" "●" "○" "●"))
+  ;; Remove leading stars
+  (org-superstar-remove-leading-stars t)
+  ;; Other customization options
+)
 (defun h4rdc0m/org-mode-visual-fill ()
   (setq visual-fill-column-width 100
 	visual-fill-column-center-text t)

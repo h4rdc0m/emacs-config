@@ -1,0 +1,266 @@
+#+title H4rdc0m's Emacs from Scratch Configuration
+#+PROPERTY: header-args:emacs-lisp :tangle ./init.el :mkdirp yes
+
+* Welcome!
+This is our Emacs configuration andgenerates [[file:init.el][init.el]], which can be loaded by Emacs at startup.
+
+** Font tweaks
+We are using [[https://www.nerdfonts.com/font-downloads][Fira Mono Nerd Font]] and [[https://fonts.google.com/specimen/Cantarell?query=cantarel][Cantarell]].
+
+#+begin_src emacs-lisp
+
+  ;; NOTE: init.el is now generated from Emacs.org edit that file
+  ;;       in Emacs to generate the config automatically.
+
+  ;; You most likely need to adjust these values
+  (defvar h4rdc0m/default-font-size 120)
+  (defvar h4rdc0m/default-variable-font-size 120)
+  (defvar h4rdc0m/fixed-font "FiraCode Nerd Font")
+  (defvar h4rdc0m/variable-font "Cantarell")
+
+#+end_src
+
+* Tips for use
+In this document I've added links in many places that lead you to documentation for the various packages we use.  If you're looking at this file in Emacs, you can put your cursor on a link and press =C-c C-o= or run =M-x org-open-at-point= to open the link in your web browser.
+
+
+* Straight bootstrap
+We use [[https://github.com/radian-software/straight.el][Straight]] to manage packages and augment alias use-package with the straight variant. Straight does not support :ensure t.
+
+#+begin_src emacs-lisp
+
+  ;; Straight bootstrap code
+    
+  (setq package-enable-at-startup nil)
+  (setq straight-use-package-by-default t)
+  (setq straight-vc-git-default-clone-depth 1)
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+         (expand-file-name
+          "straight/repos/straight.el/bootstrap.el"
+          (or (bound-and-true-p straight-base-dir)
+              user-emacs-directory)))
+        (bootstrap-version 7))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+  (straight-use-package 'use-package)
+      
+#+end_src
+
+* Basic UI Configuration
+
+#+begin_src emacs-lisp
+
+  (setq inhibit-startup-message t)
+
+  (scroll-bar-mode -1) ; Disable visible scrollbar
+  (tool-bar-mode -1)   ; Disable the toolbar
+  (tooltip-mode -1)    ; Disable tooltips
+  (set-fringe-mode 10) ; Give some breathing room
+
+  (menu-bar-mode -1)   ; Disable the menu bar
+
+  ;; Set up the visible bell
+  (setq visible-bell t) ; Disable for MacOS
+
+  
+  ;; Make ESC quit prompts
+  (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+  (column-number-mode)
+  (global-display-line-numbers-mode t)
+  (setq display-line-numbers 'relative)
+
+  ;; Disable line numbers for some modes
+  (dolist (mode '(org-mode-hook
+                  term-mode-hook
+                  shell-mode-hook
+                  eshell-mode-hook))
+    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+#+end_src
+
+* Font Configuration
+
+#+begin_src emacs-lisp
+
+  ;; Font set up
+  (set-face-attribute 'default nil :font h4rdc0m/fixed-font :height h4rdc0m/default-font-size)
+  (set-face-attribute 'fixed-pitch nil :font h4rdc0m/fixed-font :height h4rdc0m/default-font-size)
+  (set-face-attribute 'variable-pitch nil :font "Cantarell" :height h4rdc0m/variable-font-size :weight 'regular)
+
+
+#+end_src
+
+* Keybinding Configuration
+This configuration uses [[https://evil.readthedocs.io/en/latest/index.html][evil-mode]] for a Vi-like modal editing experience. [[https://github.com/noctuid/general.el][general.el]] is used for easy keybinding configuration that integrates well with which-key. [[https://github.com/emacs-evil/evil-collection][evil-collection]] is used to automatically configure various Emacs modes with Vi-like keybindings for evil-mode.
+
+#+begin_src emacs-lisp
+
+  ;; Make ESC quit prompts
+  (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+  (use-package general
+    :config
+    (general-create-definer h4rdc0m/leader-keys
+      :keymaps '(normal insert visual emacs)
+      :prefix "SPC"
+      :global-prefix "C-SPC")
+    
+    (h4rdc0m/leader-keys
+      "t" '(:ignore t :which-key "toggles")
+      "tt" '(counsel-load-theme :which-key "choose theme")))
+
+  (use-package evil
+    :demand t
+    :init
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    (setq evil-want-C-u-scroll t)
+    (setq evil-want-C-i-jump nil)
+    :config
+    (evil-mode 1)
+    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+    (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+    ;; Use visual line motions even outside of visual line mode buffers
+    (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+    (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+    (evil-set-initial-state 'message-buffer-mode 'normal)
+    (evil-set-initial-state 'dashboard-mode 'normal))
+
+  (use-package evil-collection
+    :after evil 
+    :init
+    (setq forge-add-default-bindings nil)
+    :config
+    (evil-collection-init))
+
+#+end_src
+
+* UI Configuration
+
+** Command Log Mode
+[[https://github.com/lewang/command-log-mode][command-log-mode]] is useful for displaying a panel showing each key binding you use in a panel on the right side of the frame. Great for live streams and screencasts.
+#+begin_src emacs-lisp
+
+  (use-package command-log-mode)
+
+#+end_src
+
+** Color Theme
+[[https://github.com/hlissner/emacs-doom-themes][doom-themes]] is a great set of themes with a lot of variety and support for many Emacs modes.
+
+#+begin_src emacs-lisp
+
+  ;; Configure Doom Emacs themes
+  (use-package doom-themes
+    :demand t
+    :config
+    ;; Global settings (defaults)
+    (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+          doom-themes-enable-italic t) ; if nil, italics is universally disabled
+    (load-theme 'doom-monokai-pro t)
+
+    ;; Enable flashing mode-line on errors
+    (doom-themes-visual-bell-config)
+    ;; Enable custom neotree theme (all-the-icons must be installed!)
+    (doom-themes-neotree-config)
+    ;; or for treemacs users
+    (setq doom-themes-treemacs-theme "doom-atom") ; use "doom-colors" for less minimal icon theme
+    (doom-themes-treemacs-config)
+    ;; Corrects (and improves) org-mode's native fontification.
+    (doom-themes-org-config))
+
+#+end_src
+
+** Better Modeline
+[[https://github.com/seagle0128/doom-modeline][doom-modeline]] is a very attractive and rich (yet still minimal) mode line configuration for Emacs. The default configuration is quite good but you can check out the [[https://github.com/seagle0128/doom-modeline#customize][configuration options]] for more things you can enable or disable.
+
+*NOTE:* The first time you load your configuration on a new machine, you’ll need to run `M-x all-the-icons-install-fonts` so that mode line icons display correctly.
+
+#+begin_src emacs-lisp
+
+    (use-package all-the-icons)
+
+    ;; Configure Doom modeline
+    (use-package doom-modeline
+      :demand t
+      :init (doom-modeline-mode 1)
+      :custom ((doom-modeline-height 35)))
+
+#+end_src
+
+** Which Key
+[[https://github.com/justbur/emacs-which-key][which-key]] is a useful UI panel that appears when you start pressing any keybinding in Emacs to offer all possible completions for the prefix.
+
+#+begin_src emacs-lisp
+
+  ;; Configure which-key
+  (use-package which-key
+    :init (which-key-mode)
+    :diminish which-key-mode
+    :config
+    (setq which-key-idle-delay 0.3))
+
+#+end_src
+
+** Ivy and Counsel
+[[https://oremacs.com/swiper/][Ivy]] is an excellent completion framework for Emacs. It provides a minimal yet powerful selection menu that appears when you open files, switch buffers, and for many other tasks in Emacs. Counsel is a customized set of commands to replace `find-file` with `counsel-find-file`, etc which provide useful commands for each of the default completion commands.
+
+[[https://github.com/Yevgnen/ivy-rich][ivy-rich]] adds extra columns to a few of the Counsel commands to provide more information about each item.
+
+#+begin_src emacs-lisp
+
+  (use-package ivy
+    :diminish
+    :bind (("C-s" . swiper)
+           :map ivy-minibuffer-map
+           ("TAB" . ivy-alt-done)
+           ("C-l" . ivy-alt-done)
+           ("C-j" . ivy-next-line)
+           ("C-k" . ivy-previous-line)
+           :map ivy-switch-buffer-map
+           ("C-k" . ivy-previous-line)
+           ("C-l" . ivy-done)
+           ("C-d" . ivy-switch-buffer-kill)
+           :map ivy-reverse-i-search-map
+           ("C-k" . ivy-previous-line)
+           ("C-d" . ivy-reverse-i-search-kill))
+    :config
+    (ivy-mode 1))
+
+  (use-package ivy-rich
+    :init
+    (ivy-rich-mode 1))
+
+  (use-package counsel
+    :bind (("C-M-j" . 'counsel-switch-buffer)
+           :map minibuffer-local-map
+           ("C-r" . 'counsel-minibuffer-history))
+    :config
+    (counsel-mode 1))
+
+#+end_src
+
+** Helpful Help Commands
+Helpful adds a lot of very helpful (get it?) information to Emacs’ describe- command buffers. For example, if you use describe-function, you will not only get the documentation about the function, you will also see the source code of the function and where it gets used in other places in the Emacs configuration. It is very useful for figuring out how things work in Emacs.
+#+begin_src emacs-lisp
+
+  (use-package helpful
+    :custom
+    (counsel-describe-function-function #'helpful-callable)
+    (counsel-describe-variable-function #'helpful-variable)
+    :bind
+    ([remap describe-function] . counsel-describe-function)
+    ([remap describe-command] . helpful-command)
+    ([remap describe-variable] . counsel-describe-variable)
+    ([remap describe-key] . helpful-key))
+
+#+end_src
