@@ -310,7 +310,7 @@ prescient.el provides some helpful behavior for sorting Ivy completion candidate
     :config
     ;; Uncomment the following to have sorting remembered acros sessions.
     ;(prescient-persist-mode 1)
-    (ivy-prescient-mode 1)
+    (ivy-prescient-mode 1))
 
 #+end_src
 
@@ -400,7 +400,6 @@ This section contains the basic configuration for =org-mode= plus the configurat
     (visual-line-mode 1))
 
   (use-package org
-    :pin org
     :hook (org-mode . h4rdc0m/org-mode-setup)
     :config
     (setq org-ellipsis " ▾")
@@ -596,6 +595,9 @@ This snippet adds a hook to =org-mode= buffers so that =h4rdc0m/org-babel-tangle
   (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'h4rdc0m/org-babel-tangle-config)))
 
 #+end_src
+
+#+RESULTS:
+| (lambda nil (add-hook 'after-save-hook #'h4rdc0m/org-babel-tangle-config)) | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-fold-show-all append local] 5] | #[0 \300\301\302\303\304$\207 [add-hook change-major-mode-hook org-babel-show-result-all append local] 5] | org-babel-result-hide-spec | org-babel-hide-all-hashes | (lambda nil (display-line-numbers-mode 0)) |
 
 * Development
 

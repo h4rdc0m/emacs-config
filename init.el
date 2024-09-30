@@ -267,7 +267,6 @@
   (visual-line-mode 1))
 
 (use-package org
-  :pin org
   :hook (org-mode . h4rdc0m/org-mode-setup)
   :config
   (setq org-ellipsis " ▾")
