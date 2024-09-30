@@ -1047,7 +1047,7 @@ Dired is a built-in file manager for Emacs that does some pretty amazing things!
 #+begin_src emacs-lisp
 
   (use-package dired
-    :ensure nil
+    :straight (:type built-in)
     :commands (dired dired-jump)
     :bind (("C-x C-j" . dired-jump))
     :custom ((dired-listing-switches "-agho --group-directories-first"))
@@ -1077,6 +1077,9 @@ Dired is a built-in file manager for Emacs that does some pretty amazing things!
       "H" 'dired-hide-dotfiles-mode))
 
 #+end_src
+
+#+RESULTS:
+| dired-hide-dotfiles-mode | all-the-icons-dired-mode |
 
 * Applications
 
@@ -1109,5 +1112,8 @@ Dial the GC threshold back down so that garbage collection happens more frequent
   (setq gc-cons-threshold (* 2 1000 1000))
 
 #+end_src
+
+#+RESULTS:
+: 2000000
 
 

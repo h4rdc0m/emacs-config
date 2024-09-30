@@ -208,7 +208,7 @@
   :config
   ;; Uncomment the following to have sorting remembered acros sessions.
   ;(prescient-persist-mode 1)
-  (ivy-prescient-mode 1)
+  (ivy-prescient-mode 1))
 
 (use-package helpful
   :custom
@@ -587,7 +587,7 @@
   (eshell-git-prompt-use-theme 'powerline))
 
 (use-package dired
-  :ensure nil
+  :straight (:type built-in)
   :commands (dired dired-jump)
   :bind (("C-x C-j" . dired-jump))
   :custom ((dired-listing-switches "-agho --group-directories-first"))
