@@ -44,7 +44,6 @@ In this document I've added links in many places that lead you to documentation 
 
 #+end_src
 
-
 * Straight bootstrap
 We use [[https://github.com/radian-software/straight.el][Straight]] to manage packages and augment alias use-package with the straight variant. Straight does not support :ensure t.
 
@@ -736,7 +735,6 @@ There are a number of other language servers for Python so if you find that =pyl
 #+begin_src emacs-lisp
 
   (use-package python-mode
-    :ensure t
     :hook (python-mode . lsp-deferred)
     :custom
     ;; NOTE: Set these if Python 3 is called "python3" on your system!
@@ -759,6 +757,29 @@ You can use the pyvenv package to use =virtualenv= environments in Emacs.  The =
     (pyvenv-mode 1))
 
 #+end_src
+
+*** CMake
+ 
+#+begin_src emacs-lisp
+  (use-package cmake-mode
+    :hook (cmake-mode . lsp-deferred))
+  (use-package rtags)
+  (use-package cmake-ide
+    :config
+    (require 'rtags)
+    (cmake-ide-setup))
+#+end_src
+
+*** C++
+
+#+begin_src emacs-lisp
+
+  (add-hook 'c++-mode-hook 'lsp)
+  
+#+end_src
+
+*** C
+*** Kotlin
 
 ** Company Mode
 
@@ -800,6 +821,8 @@ We also use [[https://github.com/sebastiencs/company-box][company-box]] to furth
     ;; NOTE: Set this to the folder where you keep your Git repos!
     (when (file-directory-p "~/Projects/Code")
       (setq projectile-project-search-path '("~/Projects/Code")))
+    (when (file-directory-p "~/source/repos")
+      (setq projectile-project-search-path '("~/source/repos")))
     (setq projectile-switch-project-action #'projectile-dired))
 
   (use-package counsel-projectile

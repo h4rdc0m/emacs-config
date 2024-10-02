@@ -474,7 +474,6 @@
   (setq typescript-indent-level 2))
 
 (use-package python-mode
-  :ensure t
   :hook (python-mode . lsp-deferred)
   :custom
   ;; NOTE: Set these if Python 3 is called "python3" on your system!
@@ -488,6 +487,16 @@
   :after python-mode
   :config
   (pyvenv-mode 1))
+
+(use-package cmake-mode
+  :hook (cmake-mode . lsp-deferred))
+(use-package rtags)
+(use-package cmake-ide
+  :config
+  (require 'rtags)
+  (cmake-ide-setup))
+
+(add-hook 'c++-mode-hook 'lsp)
 
 (use-package company
   :after lsp-mode
@@ -513,6 +522,8 @@
   ;; NOTE: Set this to the folder where you keep your Git repos!
   (when (file-directory-p "~/Projects/Code")
     (setq projectile-project-search-path '("~/Projects/Code")))
+  (when (file-directory-p "~/source/repos")
+    (setq projectile-project-search-path '("~/source/repos")))
   (setq projectile-switch-project-action #'projectile-dired))
 
 (use-package counsel-projectile
